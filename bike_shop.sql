@@ -83,15 +83,15 @@ GO
 -- Report 1: Local vs out-of-town customers (local = Spring Valley, NY 10977)
 SELECT
   CASE
-    WHEN CustomerAddress LIKE '%Spring Valley NY 10977%'
+    WHEN Bike.CustomerAddress LIKE '%Spring Valley NY 10977%'
       THEN 'Local'
     ELSE 'Out-of-Town'
   END AS CustomerType,
   COUNT(*) AS CustomerCount
-FROM dbo.BikeSale
+FROM dbo.BikeSale AS Bike
 GROUP BY
   CASE
-    WHEN CustomerAddress LIKE '%Spring Valley NY 10977%'
+    WHEN Bike.CustomerAddress LIKE '%Spring Valley NY 10977%'
       THEN 'Local'
     ELSE 'Out-of-Town'
   END;
@@ -99,39 +99,39 @@ GO
 
 -- Report 2: Bikes sold per season
 SELECT
-  Season,
+  Bike.Season,
   COUNT(*) AS BikesSold
-FROM dbo.BikeSale
-GROUP BY Season
+FROM dbo.BikeSale AS Bike
+GROUP BY Bike.Season
 ORDER BY BikesSold DESC;
 GO
 
 -- Report 3: Average/min/max time in store and total profit
 SELECT
-  AVG(DATEDIFF(DAY, DatePurchased, DateSold) * 1.0) AS AvgDaysInStore,
-  MIN(DATEDIFF(DAY, DatePurchased, DateSold)) AS MinDaysInStore,
-  MAX(DATEDIFF(DAY, DatePurchased, DateSold)) AS MaxDaysInStore,
-  SUM(SoldPrice - PurchasePrice) AS TotalProfit
-FROM dbo.BikeSale;
+  AVG(DATEDIFF(DAY, Bike.DatePurchased, Bike.DateSold) * 1.0) AS AvgDaysInStore,
+  MIN(DATEDIFF(DAY, Bike.DatePurchased, Bike.DateSold)) AS MinDaysInStore,
+  MAX(DATEDIFF(DAY, Bike.DatePurchased, Bike.DateSold)) AS MaxDaysInStore,
+  SUM(Bike.SoldPrice - Bike.PurchasePrice) AS TotalProfit
+FROM dbo.BikeSale AS Bike;
 GO
 
 -- Report 4: Profit per sale with details
 SELECT
-  CustomerName,
-  BikeCompany,
-  PurchasePrice,
-  SoldPrice,
-  CASE WHEN IsNew = 1 THEN 'New' ELSE 'Used' END AS BikeCondition,
-  (SoldPrice - PurchasePrice) AS Profit
-FROM dbo.BikeSale
-ORDER BY DateSold;
+  Bike.CustomerName,
+  Bike.BikeCompany,
+  Bike.PurchasePrice,
+  Bike.SoldPrice,
+  CASE WHEN Bike.IsNew = 1 THEN 'New' ELSE 'Used' END AS BikeCondition,
+  (Bike.SoldPrice - Bike.PurchasePrice) AS Profit
+FROM dbo.BikeSale AS Bike
+ORDER BY Bike.DateSold;
 GO
 
 -- Report 5: Most popular bike company
 SELECT TOP 1 WITH TIES
-  BikeCompany,
+  Bike.BikeCompany,
   COUNT(*) AS BikesSold
-FROM dbo.BikeSale
-GROUP BY BikeCompany
+FROM dbo.BikeSale AS Bike
+GROUP BY Bike.BikeCompany
 ORDER BY COUNT(*) DESC;
 GO

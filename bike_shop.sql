@@ -3,6 +3,15 @@
   T-SQL script: table, sample data, and report queries.
 */
 
+IF DB_ID('BikeSaleDB') IS NULL
+BEGIN
+  CREATE DATABASE BikeSaleDB;
+END;
+GO
+
+USE BikeSaleDB;
+GO
+
 IF OBJECT_ID('dbo.BikeSale', 'U') IS NOT NULL
 BEGIN
   DROP TABLE dbo.BikeSale;

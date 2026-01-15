@@ -3,13 +3,13 @@
   T-SQL script: table, sample data, and report queries.
 */
 
-IF OBJECT_ID('dbo.BikeSales', 'U') IS NOT NULL
+IF OBJECT_ID('dbo.BikeSale', 'U') IS NOT NULL
 BEGIN
-  DROP TABLE dbo.BikeSales;
+  DROP TABLE dbo.BikeSale;
 END;
 GO
 
-CREATE TABLE dbo.BikeSales (
+CREATE TABLE dbo.BikeSale (
   BikeSaleId INT IDENTITY(1,1) PRIMARY KEY,
   CustomerName NVARCHAR(100) NOT NULL,
   CustomerAddress NVARCHAR(200) NOT NULL,
@@ -24,15 +24,15 @@ CREATE TABLE dbo.BikeSales (
   DateSold DATE NOT NULL,
   Season NVARCHAR(10) NOT NULL,
   SoldPrice DECIMAL(10, 2) NOT NULL,
-  CONSTRAINT CHK_BikeSales_Season
+  CONSTRAINT CHK_BikeSale_Season
     CHECK (Season IN ('Winter', 'Spring', 'Summer', 'Fall')),
-  CONSTRAINT CHK_BikeSales_Dates
+  CONSTRAINT CHK_BikeSale_Dates
     CHECK (DateSold >= DatePurchased),
-  CONSTRAINT CHK_BikeSales_SoldPrice
+  CONSTRAINT CHK_BikeSale_SoldPrice
     CHECK (SoldPrice <= 3000.00),
-  CONSTRAINT CHK_BikeSales_PurchaseStart
+  CONSTRAINT CHK_BikeSale_PurchaseStart
     CHECK (DatePurchased >= '2022-03-01'),
-  CONSTRAINT CHK_BikeSales_Condition
+  CONSTRAINT CHK_BikeSale_Condition
     CHECK (
       (IsNew = 1 AND ConditionWhenReceived IS NULL)
       OR
@@ -41,7 +41,7 @@ CREATE TABLE dbo.BikeSales (
 );
 GO
 
-INSERT INTO dbo.BikeSales (
+INSERT INTO dbo.BikeSale (
   CustomerName,
   CustomerAddress,
   PhoneNumber,
@@ -79,7 +79,7 @@ SELECT
     ELSE 'Out-of-Town'
   END AS CustomerType,
   COUNT(*) AS CustomerCount
-FROM dbo.BikeSales
+FROM dbo.BikeSale
 GROUP BY
   CASE
     WHEN CustomerAddress LIKE '%Spring Valley NY 10977%'
@@ -92,7 +92,7 @@ GO
 SELECT
   Season,
   COUNT(*) AS BikesSold
-FROM dbo.BikeSales
+FROM dbo.BikeSale
 GROUP BY Season
 ORDER BY BikesSold DESC;
 GO
@@ -103,7 +103,7 @@ SELECT
   MIN(DATEDIFF(DAY, DatePurchased, DateSold)) AS MinDaysInStore,
   MAX(DATEDIFF(DAY, DatePurchased, DateSold)) AS MaxDaysInStore,
   SUM(SoldPrice - PurchasePrice) AS TotalProfit
-FROM dbo.BikeSales;
+FROM dbo.BikeSale;
 GO
 
 -- Report 4: Profit per sale with details
@@ -114,7 +114,7 @@ SELECT
   SoldPrice,
   CASE WHEN IsNew = 1 THEN 'New' ELSE 'Used' END AS BikeCondition,
   (SoldPrice - PurchasePrice) AS Profit
-FROM dbo.BikeSales
+FROM dbo.BikeSale
 ORDER BY DateSold;
 GO
 
@@ -122,7 +122,7 @@ GO
 SELECT TOP 1 WITH TIES
   BikeCompany,
   COUNT(*) AS BikesSold
-FROM dbo.BikeSales
+FROM dbo.BikeSale
 GROUP BY BikeCompany
 ORDER BY COUNT(*) DESC;
 GO
